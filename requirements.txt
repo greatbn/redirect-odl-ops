@@ -1,0 +1,2 @@
+Jinja2==2.10.1
+python-neutronclient==6.12.0python-novaclient==14.0.0
