@@ -51,10 +51,18 @@ class OpenstackClient(object):
                 if h.hypervisor_hostname == compute_node:
                     return h.host_ip
 
+
+    def get_fixed_ip_by_floating_ip(self, floating_ip):
+        for fip in self.neutron.list_floatingips()['floatingips']:
+            if fip['floating_ip_address'] == floating_ip:
+                return fip['fixed_ip_address']
+
 if __name__ == "__main__":
     ops = OpenstackClient()
     # print(ops.get_mac_address_from_ip('172.16.11.3'))
     # ops.find_compute_ip_by_instance_ip('172.16.11.3')
-    print(ops.find_compute_ip_by_instance_ip('172.16.11.3'))
+    # print(ops.find_compute_ip_by_instance_ip('172.16.11.3'))
+    print(ops.get_fixed_ip_by_floating_ip('192.168.110.178'))
+
 
 

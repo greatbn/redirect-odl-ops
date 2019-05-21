@@ -39,6 +39,36 @@ def reverse_link_generate(flow_id, flow_name, victim_ipv4_address,
     return flow
 
 
+def forward_link_ips_generate(flow_id, flow_name, honeypot_fixed_ip,
+                              attacker_ipv4_address,
+                              victim_fixed_ip):
+    env = create_env()
+
+    template = env.get_template(FORWARD_LINK_FIPS_TEMPLATE_FILE)
+    flow = template.render(flow_id=flow_id,
+                           flow_name=flow_name,
+                           honeypot_fixed_ip=honeypot_fixed_ip,
+                           attacker_ipv4_address=attacker_ipv4_address,
+                           victim_fixed_ip=victim_fixed_ip)
+
+    return flow
+
+
+def reverse_link_ips_generate(flow_id, flow_name, victim_ipv4_address,
+                              victim_mac_address, honeypot_ipv4_address,
+                              attacker_ipv4_address):
+    env = create_env()
+    template = env.get_template(REVERSE_LINK_FIPS_TEMPLATE_FILE)
+    flow = template.render(flow_id=flow_id,
+                           flow_name=flow_name,
+                           victim_ipv4_address=victim_ipv4_address,
+                           victim_mac_address=victim_mac_address,
+                           honeypot_ipv4_address=honeypot_ipv4_address,
+                           attacker_ipv4_address=attacker_ipv4_address)
+
+    return flow
+
+
 if __name__ == "__main__":
     flow_id = 'test_redirect_fl'
     flow_name = flow_id
