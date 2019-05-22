@@ -137,6 +137,29 @@ class OpenstackClient(object):
             return True
         except Exception as e:
             return False
+
+    
+    def delete_server(self, server_id):
+        try:
+            self.nova.servers.delete(server_id)
+            return True
+        except Exception as e:
+            return False
+
+    def get_floatingip(self, fixed_ip):
+        try:
+            return self.neutron.list_floatingips(fixed_ip_address=fixed_ip)
+        except Exception as e:
+            return False
+
+    def delete_floatingip(self, id):
+        try:
+            self.neutron.delete_floatingip(id)
+            return True
+        except Exception as e:
+            return False
+
+
         
 if __name__ == "__main__":
     ops = OpenstackClient()
@@ -144,14 +167,13 @@ if __name__ == "__main__":
     # ops.find_compute_ip_by_instance_ip('172.16.11.3')
     # print(ops.find_compute_ip_by_instance_ip('172.16.11.3'))
     # print(ops.get_fixed_ip_by_floating_ip('192.168.110.178'))
-    net = ops.get_network_id_by_ip('172.16.11.5')
-    print("Found network id" , net)
-    server, fip, fixed_ip = ops.create_server('sapd-test-4', net)
-    print(server.__dict__)
-    print(fip)
-    print(fixed_ip)
+    # net = ops.get_network_id_by_ip('172.16.11.5')
+    # print("Found network id" , net)
+    # server, fip, fixed_ip = ops.create_server('sapd-test-4', net)
     # fip = ops.create_floatingip()
-    
+    fip = ops.get_floatingip('172.16.11.13')
+    ops.delete_floatingip(fip['floatingips'][0]['id'])
+
 
 
     

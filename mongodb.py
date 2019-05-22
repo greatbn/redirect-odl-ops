@@ -29,8 +29,16 @@ class MongoDBWrapper(object):
             print("Something went wrong!!! {}".format(str(e)))
             return False
 
+    def delete_flow(self, data):
+        try:
+            self.db.flows.delete_one(data)
+            return True
+        except Exception as e:
+            print("Something went wrong!!! {}".format(str(e)))
+            return False
+
 
 if __name__ == "__main__":
     
     db = MongoDBWrapper()
-    db.save_flow({'test': 'test_data'})
+    db.delete_flow({'attacker_ip': '192.168.110.186', 'victim_ip': '192.168.110.181'})

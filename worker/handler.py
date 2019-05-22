@@ -89,7 +89,8 @@ def add_flow_handler(self, data):
         'honeypot_ip': honeypot_ipv4_address,
         'honeypot_instance_id': server.id,
         'victim_switch_id': victim_switch_id,
-        'honeypot_switch_id': honeypot_switch_id
+        'honeypot_switch_id': honeypot_switch_id,
+        'honeypot_fixed_ip': honeypot_fixed_ip
     }
     db.save_flow(
         col
@@ -120,3 +121,22 @@ def del_flow_handler(self, data):
         data['attacker_ip'],
         data['victim_ip']
     ))
+
+    ops = OpenstackClient()
+    db = MongoDBWrapper()
+
+    print("Deleting Honeypot instance")
+    
+    fip = ops.get_floatingip(data['honeypot_fixed_ip'])
+    ops.delete_floatingip(fip['floatingips'][0]['id'])
+    ops.delete_server(data['honeypot_instance_id'])
+    
+    db.delete_flow(
+        {
+            'attacker_ip': data['attacker_ip'],
+            'victim_ip': data['victim_ip']
+        }
+    )
+    print("Deleted in database")
+    
+    
