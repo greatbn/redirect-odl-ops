@@ -3,6 +3,8 @@ from flask import request, current_app as app
 from flask_restful import Resource
 from schema.handle_attack import HandleAttackSchema
 
+from bson import json_util
+import json
 
 class RootResource(Resource):
 
@@ -41,7 +43,31 @@ class HandleAttackResource(Resource):
         return mess, 201
         
 
-# class ManageAttackResource(Resource):
+class ManageAttackResource(Resource):
 
-#     def get(self):
+    def get(self, attacker_ip, victim_ip):
+        data = app.db.find_flow(
+            {
+                'attacker_ip': attacker_ip,
+                'victim_ip': victim_ip
+            }
+        )
+        if not data:
+            return {"message": "Not Found"}, 404
+        data = json.loads(json_util.dumps(data))
+        return data, 200
 
+    def delete(self, attacker_ip, victim_ip):
+        data = app.db.find_flow(
+            {
+                'attacker_ip': attacker_ip,
+                'victim_ip': victim_ip
+            }
+        )
+        if not data:
+            return {"message": "Not Found"}, 404
+        data = json.loads(json_util.dumps(data))
+        
+        from worker.handler import del_flow_handler
+        del_flow_handler.delay(data)
+        return {"message": "Deleting defend flow"}, 201

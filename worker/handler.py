@@ -95,3 +95,28 @@ def add_flow_handler(self, data):
         col
     )
     print("Stored in databases")
+
+
+@dvnh_worker.task(bind=True, name='workers.handle.del_flow')
+def del_flow_handler(self, data):
+    victim_switch_id = data['victim_switch_id']
+    honeypot_switch_id = data['honeypot_switch_id']
+
+    flow_id = data['flow_id']
+
+    print("Deleting Flow in victim switch {}".format(victim_switch_id))
+    utils.delete_flow(
+        switch_id=victim_switch_id,
+        table_id=27,
+        flow_id=flow_id + "_forward_link"
+    )
+    print("Deleting Flow in honeypot switch {}".format(honeypot_switch_id))
+    utils.delete_flow(
+        switch_id=honeypot_switch_id,
+        table_id=28,
+        flow_id=flow_id + "_reverse_link"
+    )
+    print("Deleted Redirect Flow Traffic for attacker {}. Victim {}".format(
+        data['attacker_ip'],
+        data['victim_ip']
+    ))
