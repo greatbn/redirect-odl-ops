@@ -1,7 +1,8 @@
-from flask import Flask
+from flask import Flask, g
 from flask_restful import Api
 
 from resources.handlers import RootResource, HandleAttackResource
+from mongodb import MongoDBWrapper
 
 def create_app():
 
@@ -10,6 +11,9 @@ def create_app():
 
     api.add_resource(RootResource, "/")
     api.add_resource(HandleAttackResource, "/handle_attack")
+    db = MongoDBWrapper()
+
+    app.db = db
     return app
 
 
