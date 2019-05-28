@@ -1,8 +1,8 @@
 import config
 
 from pymongo import MongoClient
-
-
+from bson import json_util
+import json
 
 class MongoDBWrapper(object):
 
@@ -37,6 +37,20 @@ class MongoDBWrapper(object):
             print("Something went wrong!!! {}".format(str(e)))
             return False
 
+    def update_flow(self, filter, data):
+        try:
+            self.db.flows.update(filter, data)
+            return True
+        except Exception as e:
+            return False
+
+    def list_flows(self):
+
+        try:
+            return json.loads(json_util.dumps(list(self.db.flows.find({}))))
+        except Exception as e:
+            print(e)
+            return False
 
 if __name__ == "__main__":
     

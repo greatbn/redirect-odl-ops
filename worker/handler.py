@@ -92,7 +92,8 @@ def add_flow_handler(self, data):
         'honeypot_switch_id': honeypot_switch_id,
         'honeypot_fixed_ip': honeypot_fixed_ip
     }
-    db.save_flow(
+    db.update_flow(
+        data,
         col
     )
     print("Stored in databases")
@@ -126,11 +127,18 @@ def del_flow_handler(self, data):
     db = MongoDBWrapper()
 
     print("Deleting Honeypot instance")
-    
+
     fip = ops.get_floatingip(data['honeypot_fixed_ip'])
-    ops.delete_floatingip(fip['floatingips'][0]['id'])
+    try:
+        ops.delete_floatingip(fip['floatingips'][0]['id'])
+    except IndexError:
+        print("Floating IPs is deleted")
     ops.delete_server(data['honeypot_instance_id'])
     
+    # server = ops.create_server('test', network_id, is_floating=False, image_id='db9bc435-d88e-4b17-b27d-747fbdced9d8')
+    # ops.delete_server(server.id)
+    
+
     db.delete_flow(
         {
             'attacker_ip': data['attacker_ip'],

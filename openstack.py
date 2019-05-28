@@ -72,7 +72,7 @@ class OpenstackClient(object):
             if fip['floating_ip_address'] == floating_ip:
                 return fip['fixed_ip_address']
 
-    def create_server(self, name, network_id):
+    def create_server(self, name, network_id, is_floating=True, image_id=config.HONEYPOT_IMAGE_ID):
 
         flavor_id = config.HONEYPOT_INSTANCE_FLAVOR_ID
         image_id = config.HONEYPOT_IMAGE_ID
@@ -97,13 +97,15 @@ class OpenstackClient(object):
         if server.status == 'ERROR':
             print("Cannot create server")
             return False
-        fixed_ip = server.addresses[s.addresses.keys()[0]][0]['addr']
-        port = self.get_port_by_ip(fixed_ip)
-        fip = self.create_floatingip()
-        self.associate_floatingip(fip['floatingip']['id'], port['ports'][0]['id'])
-        
-        floating_ip_address = fip['floatingip']['floating_ip_address']
-        return server, floating_ip_address, fixed_ip
+        if is_floating:
+            fixed_ip = server.addresses[s.addresses.keys()[0]][0]['addr']
+            port = self.get_port_by_ip(fixed_ip)
+            fip = self.create_floatingip()
+            self.associate_floatingip(fip['floatingip']['id'], port['ports'][0]['id'])
+            
+            floating_ip_address = fip['floatingip']['floating_ip_address']
+            return server, floating_ip_address, fixed_ip
+        return server
 
     def get_network_id_by_ip(self, instance_ip):
         port = self.neutron.list_ports(

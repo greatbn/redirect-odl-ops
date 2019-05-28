@@ -36,12 +36,19 @@ class HandleAttackResource(Resource):
             app.logger.info(mess)
             return mess, 400
         # If not send to worker
+        if app.db.save_flow(data):
+            del data['_id']
+            from worker.handler import add_flow_handler
+            add_flow_handler.delay(data)
+            mess = {"message": "Accepted request, We will handle it now"}
+            return mess, 201
 
-        from worker.handler import add_flow_handler
-        add_flow_handler.delay(data)
-        mess = {"message": "Accepted request, We will handle it now"}
-        return mess, 201
-        
+    def get(self):
+        """Return all handle attack
+        """
+
+        return app.db.list_flows()
+            
 
 class ManageAttackResource(Resource):
 
