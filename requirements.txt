@@ -1,4 +1,4 @@
-Jinja2==2.10.1
+Jinja2==2.11.3
 python-neutronclient==6.12.0
 python-novaclient==14.0.0
 Flask==1.0.3
